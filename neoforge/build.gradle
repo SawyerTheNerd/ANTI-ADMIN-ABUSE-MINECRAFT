@@ -1,0 +1,51 @@
+// NeoForge mod.
+//
+// Like Fabric, this is compiled against remapped Minecraft, so a build targets
+// one Minecraft version. Override with:
+//   ./gradlew :neoforge:build -PneoMcVersion=1.21.11 -PneoVersion=21.11.45
+plugins {
+    id 'net.neoforged.moddev' version '2.0.147'
+}
+
+// Module-specific property name; see the note in fabric/build.gradle.
+def mcVersion = project.findProperty('neoMcVersion') ?: '1.21.11'
+def neoVersion = project.findProperty('neoVersion') ?: '21.11.45'
+
+version = "${rootProject.version}+${mcVersion}"
+base { archivesName = 'AntiAdminAbuse-NeoForge' }
+
+neoForge {
+    // NeoForge's own version implies the Minecraft version it targets.
+    version = neoVersion
+    validateAccessTransformers = true
+
+    mods {
+        antiadminabuse {
+            sourceSet sourceSets.main
+        }
+    }
+}
+
+// NeoForge 21.11 runs on Java 21; the calendar releases need 25.
+def modJava = (mcVersion ==~ /^\d\d\..*/) ? 25 : 21
+java {
+    toolchain { languageVersion = JavaLanguageVersion.of(modJava) }
+}
+tasks.withType(JavaCompile).configureEach { options.release.set(modJava) }
+
+dependencies {
+    // core is plain Java 8 bytecode with no dependencies, so its classes are
+    // simply folded into the mod jar.
+    implementation project(':core')
+}
+
+jar {
+    from project(':core').sourceSets.main.output
+}
+
+processResources {
+    def props = [version: project.version, mcVersion: mcVersion, neoVersion: neoVersion]
+    inputs.properties props
+    filteringCharset 'UTF-8'
+    filesMatching('META-INF/neoforge.mods.toml') { expand props }
+}

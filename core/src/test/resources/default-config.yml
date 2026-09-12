@@ -1,0 +1,101 @@
+# AntiAdminAbuse configuration
+#
+# Every command executed on the server is forwarded to a Discord webhook so that
+# staff actions leave an audit trail somebody outside the game can read.
+
+# Master switch. false keeps the plugin loaded but stops all reporting.
+enabled: true
+
+# Your Discord webhook URL.
+#   Discord -> Server Settings -> Integrations -> Webhooks -> New Webhook -> Copy URL
+# Treat this like a password: anyone who has it can post in that channel.
+# You can also set it in-game with /aaa setwebhook <url>, which avoids putting it
+# in a file that might end up in a backup or a screenshot.
+webhook-url: "YOUR_DISCORD_WEBHOOK_URL_HERE"
+
+# Name shown as the message author in Discord. Leave blank for the webhook default.
+discord-username: "Anti Admin Abuse"
+
+# Optional label added to each message, so one channel can serve several servers.
+server-name: ""
+
+# true  -> rich embed with sender, UUID and world as separate fields
+# false -> a single plain-text line
+use-embed: true
+
+# Which sources to report.
+log-player-commands: true
+log-console-commands: true
+
+# When true, only report commands from operators and players holding
+# antiadminabuse.staff. Console and RCON are always reported regardless, since
+# they are inherently privileged. Useful on busy servers where normal players
+# would otherwise drown out the staff activity you actually want to audit.
+only-staff-commands: false
+
+# Allow-list mode. If this list is non-empty, ONLY these commands are reported
+# and ignored-commands below is skipped entirely. Leave empty to report
+# everything except the ignore list.
+# Example:
+#   watched-commands: [ op, deop, gamemode, give, ban, kick, pardon, whitelist ]
+watched-commands: []
+
+# Commands never reported. Defaults to common chat and info commands, which are
+# high-volume and would bury real staff activity.
+ignored-commands:
+  - msg
+  - tell
+  - w
+  - r
+  - reply
+  - me
+  - helpop
+  - list
+  - tps
+  - ping
+  - spawn
+  - help
+
+# Commands whose arguments are replaced with *** before anything is sent.
+# Without this, a command logger happily forwards "/login hunter2" to Discord and
+# becomes a password leak. Add any command on your server that takes a secret.
+redacted-commands:
+  - login
+  - l
+  - register
+  - reg
+  - changepassword
+  - changepass
+  - cp
+  - auth
+  - authme
+  - password
+  - passwd
+  - premium
+  - unregister
+  - 2fa
+  - totp
+  - op
+  - token
+  - webhook
+  - setwebhook
+  # This plugin's own aliases. /aaa setwebhook <url> has the command name
+  # "aaa", so without these the webhook URL would be logged to the very
+  # channel it grants access to.
+  - aaa
+  - antiadminabuse
+  - antiabuse
+
+# --- Delivery tuning. The defaults are sane; change only if you need to. ---
+
+# How long to wait when connecting to / reading from Discord, in milliseconds.
+connect-timeout-millis: 5000
+read-timeout-millis: 8000
+
+# Retries after a rate limit (HTTP 429) or a server-side error.
+max-retries: 3
+
+# How many pending messages to hold if Discord is unreachable. Beyond this,
+# the oldest are dropped rather than growing memory without bound. Delivery
+# always happens on a background thread, so this never slows down gameplay.
+queue-capacity: 2000

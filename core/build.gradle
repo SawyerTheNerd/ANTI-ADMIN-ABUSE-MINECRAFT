@@ -1,0 +1,17 @@
+// Platform-agnostic logic. No server API on the classpath at all, which is what
+// guarantees it cannot accidentally depend on a version-specific symbol.
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+tasks.withType(JavaCompile).configureEach { options.release.set(8) }
+
+dependencies {
+    testImplementation 'junit:junit:4.13.2'
+    // Test-only: validates that our hand-rolled payloads really are valid JSON.
+    testImplementation 'com.google.code.gson:gson:2.10.1'
+}
+
+test {
+    testLogging { events 'failed' }
+}

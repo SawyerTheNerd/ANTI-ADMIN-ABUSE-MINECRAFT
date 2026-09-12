@@ -1,0 +1,35 @@
+name: AntiAdminAbuse
+version: '${version}'
+main: enzonic.antiadminabuse.bukkit.AntiAdminAbusePlugin
+description: Logs every command run on your server to a Discord webhook, so staff actions are auditable.
+authors: [ SawyerPlaz ]
+website: https://modrinth.com/plugin/anti-admin-abuse
+
+# 1.13 is the oldest release that understands this key at all. Servers from 1.8
+# to 1.12 ignore it, and declaring 1.13 (rather than the latest version) is what
+# lets one jar load on everything from 1.13 up to the current release -- a server
+# refuses any plugin whose api-version is newer than itself.
+api-version: '1.13'
+
+# Folia has no single main thread. We never touch a scheduler (the webhook runs
+# on a thread core owns), so the same jar is region-thread safe as-is.
+folia-supported: true
+
+commands:
+  antiadminabuse:
+    description: Manage AntiAdminAbuse.
+    usage: /aaa <setwebhook|reload|status|test>
+    aliases: [ aaa, antiabuse ]
+    permission: antiadminabuse.admin
+  setwebhook:
+    description: Set the Discord webhook URL (legacy alias for /aaa setwebhook).
+    usage: /setwebhook <url>
+    permission: antiadminabuse.admin
+
+permissions:
+  antiadminabuse.admin:
+    description: Allows configuring AntiAdminAbuse.
+    default: op
+  antiadminabuse.staff:
+    description: Marks a player as staff for the only-staff-commands filter.
+    default: false

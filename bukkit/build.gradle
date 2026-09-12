@@ -1,0 +1,30 @@
+// Bukkit / Spigot / Paper / Purpur / Pufferfish / Folia.
+//
+// Compiled against the 1.8.8 API on purpose: it is the oldest API we claim to
+// support, so anything newer simply will not compile and cannot sneak a
+// NoSuchMethodError into a 1.8 server at runtime. The same jar runs on current
+// releases because every symbol used here is still present.
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+tasks.withType(JavaCompile).configureEach { options.release.set(8) }
+
+dependencies {
+    implementation project(':core')
+    compileOnly 'org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT'
+}
+
+processResources {
+    def props = [version: project.version]
+    inputs.properties props
+    filteringCharset 'UTF-8'
+    filesMatching('plugin.yml') { expand props }
+}
+
+jar {
+    archiveBaseName = 'AntiAdminAbuse-Bukkit'
+    // No shadow plugin: core is tiny and dependency-free, so folding its classes
+    // in directly keeps the build free of third-party Gradle plugins.
+    from project(':core').sourceSets.main.output
+}

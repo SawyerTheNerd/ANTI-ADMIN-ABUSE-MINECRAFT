@@ -1,0 +1,25 @@
+// BungeeCord / Waterfall proxies.
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+tasks.withType(JavaCompile).configureEach { options.release.set(8) }
+
+dependencies {
+    implementation project(':core')
+    // An older API on purpose, for the same reason as the Bukkit module: it keeps
+    // us inside the subset that every proxy build still exposes.
+    compileOnly 'net.md-5:bungeecord-api:1.16-R0.4'
+}
+
+processResources {
+    def props = [version: project.version]
+    inputs.properties props
+    filteringCharset 'UTF-8'
+    filesMatching('bungee.yml') { expand props }
+}
+
+jar {
+    archiveBaseName = 'AntiAdminAbuse-Bungee'
+    from project(':core').sourceSets.main.output
+}

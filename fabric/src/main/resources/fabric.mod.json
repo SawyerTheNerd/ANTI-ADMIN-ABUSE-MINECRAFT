@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "antiadminabuse",
+  "version": "${version}",
+  "name": "AntiAdminAbuse",
+  "description": "Logs every command run on your server to a Discord webhook, so staff actions are auditable.",
+  "authors": [ "SawyerPlaz" ],
+  "contact": {
+    "homepage": "https://modrinth.com/plugin/anti-admin-abuse",
+    "sources": "https://github.com/SawyerTheNerd/ANTI-ADMIN-ABUSE-MINECRAFT"
+  },
+  "license": "All Rights Reserved",
+  "environment": "server",
+  "entrypoints": {
+    "main": [ "enzonic.antiadminabuse.fabric.AntiAdminAbuseFabric" ]
+  },
+  "mixins": [ "antiadminabuse.mixins.json" ],
+  "depends": {
+    "fabricloader": ">=${loaderVersion}",
+    "fabric-api": "*",
+    "minecraft": "${mcVersion}",
+    "java": ">=${javaVersion}"
+  }
+}

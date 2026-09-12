@@ -1,0 +1,27 @@
+modLoader = "javafml"
+loaderVersion = "[1,)"
+license = "All Rights Reserved"
+issueTrackerURL = "https://github.com/SawyerTheNerd/ANTI-ADMIN-ABUSE-MINECRAFT/issues"
+
+[[mods]]
+modId = "antiadminabuse"
+version = "${version}"
+displayName = "AntiAdminAbuse"
+authors = "SawyerPlaz"
+description = '''
+Logs every command run on your server to a Discord webhook, so staff actions are auditable.
+'''
+
+[[dependencies.antiadminabuse]]
+modId = "neoforge"
+type = "required"
+versionRange = "[1,)"
+ordering = "NONE"
+side = "SERVER"
+
+[[dependencies.antiadminabuse]]
+modId = "minecraft"
+type = "required"
+versionRange = "[${mcVersion},)"
+ordering = "NONE"
+side = "SERVER"

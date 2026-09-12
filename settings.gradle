@@ -1,0 +1,23 @@
+pluginManagement {
+    repositories {
+        // Fabric Loom lives here, not on the Gradle Plugin Portal.
+        maven { name = 'fabric'; url = 'https://maven.fabricmc.net/' }
+        maven { name = 'neoforged'; url = 'https://maven.neoforged.net/releases' }
+        gradlePluginPortal()
+    }
+}
+
+plugins {
+    // Lets Gradle provision the JDKs the mod loaders need (21 for 1.21.x, 25 for
+    // the calendar releases) instead of requiring them preinstalled.
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}
+
+rootProject.name = 'AntiAdminAbuse'
+
+include 'core'
+include 'bukkit'
+include 'bungee'
+include 'velocity'
+include 'fabric'
+include 'neoforge'

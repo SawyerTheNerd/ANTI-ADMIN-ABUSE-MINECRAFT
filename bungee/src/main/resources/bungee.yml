@@ -1,0 +1,5 @@
+name: AntiAdminAbuse
+version: ${version}
+main: enzonic.antiadminabuse.bungee.AntiAdminAbuseBungee
+author: SawyerPlaz
+description: Logs proxy-level commands to a Discord webhook.

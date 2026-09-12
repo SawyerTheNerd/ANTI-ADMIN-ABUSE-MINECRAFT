@@ -1,0 +1,57 @@
+// Fabric mod.
+//
+// Unlike the Bukkit plugin, a Fabric mod cannot be one jar for every Minecraft
+// version: it is compiled against remapped Minecraft classes, so each game
+// version needs its own build. Override the target with:
+//   ./gradlew :fabric:build -PfabricMcVersion=1.21.11
+plugins {
+    id 'fabric-loom' version '1.17.20'
+}
+
+// Property names are module-specific on purpose: a shared `mcVersion` would mean
+// building the NeoForge mod for one version silently reconfigured this module for
+// it too, and Loom then tries to provision a Minecraft it cannot build.
+// Defaults track the newest version with published yarn mappings.
+def mcVersion = project.findProperty('fabricMcVersion') ?: '1.21.11'
+def yarnVersion = project.findProperty('yarnVersion') ?: '1.21.11+build.6'
+def loaderVersion = project.findProperty('loaderVersion') ?: '0.19.5'
+def fabricApiVersion = project.findProperty('fabricApiVersion') ?: '0.141.6+1.21.11'
+
+version = "${rootProject.version}+${mcVersion}"
+base { archivesName = 'AntiAdminAbuse-Fabric' }
+
+dependencies {
+    minecraft "com.mojang:minecraft:${mcVersion}"
+    mappings "net.fabricmc:yarn:${yarnVersion}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${loaderVersion}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}"
+
+    // Bundle core's classes into the mod jar; it has no transitive dependencies.
+    implementation project(':core')
+    include project(':core')
+}
+
+// Modern Minecraft needs Java 21; the calendar releases need 25. Core is still
+// Java 8 bytecode, which every one of those JVMs loads happily.
+def modJava = (mcVersion ==~ /^\d\d\..*/) ? 25 : 21
+java {
+    toolchain { languageVersion = JavaLanguageVersion.of(modJava) }
+    sourceCompatibility = JavaVersion.toVersion(modJava)
+    targetCompatibility = JavaVersion.toVersion(modJava)
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release.set(modJava)
+}
+
+processResources {
+    def props = [
+            version      : project.version,
+            mcVersion    : mcVersion,
+            loaderVersion: loaderVersion,
+            javaVersion  : modJava.toString(),
+    ]
+    inputs.properties props
+    filteringCharset 'UTF-8'
+    filesMatching('fabric.mod.json') { expand props }
+}
